@@ -1,6 +1,6 @@
 import os
 
-from api.client import GeoEnvironClient
+from geoenviron.client import GeoEnvironClient
 
 def test_hent_sag():
     client = GeoEnvironClient(base_url=os.getenv("API_URL"), username=os.getenv("USERNAME"), password=os.getenv("PASSWORD"))
