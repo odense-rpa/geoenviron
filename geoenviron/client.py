@@ -25,7 +25,7 @@ class GeoEnvironClient:
             logging.error("Failed to retrieve attachments for document ID %s: %s", dokument_id, e)
             raise
 
-    def hent_sag(self, params: dict = None) -> dict|None:
+    def hent_sager(self, params: dict = None) -> dict|None:
         try:
             response = self.client.get(
                 "/view_bldCasefile()",
@@ -34,7 +34,7 @@ class GeoEnvironClient:
             response.raise_for_status()
             data = response.json()
             
-            return data["value"][0] if data["value"] else None
+            return data["value"] if data["value"] else None
         except httpx.HTTPError as e:
             logging.error("Failed to retrieve cases: %s", e)
             raise
