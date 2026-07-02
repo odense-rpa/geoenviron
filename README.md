@@ -1,21 +1,69 @@
-## How to use this template
+# geoenviron
 
-The repository has been tagged as a template repository. This means you can create a new repository based on this code using the [GitHub instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
+Python-klient til GeoEnviron API'et, som giver adgang til bygge- og miljøsagsakter, dokumenter og bilag fra et dansk kommunalt sagsstyringssystem.
 
+> Denne klient er ikke officielt støttet eller godkendt af leverandøren bag GeoEnviron. Brug på eget ansvar.
 
-### Alternative method: checkout the repository and remove git bindings
-Replace `<new-folder-name>` with your desired folder name:
-```sh
-git clone https://github.com/odense-rpa/process-template.git <new-folder-name>
+## Om GeoEnviron
 
-cd <new-folder-name>
+GeoEnviron er et kommunalt sagsstyringssystem til bygge- og miljøsager. API'et eksponerer sagsakter, dokumenter og bilag via OData-forespørgsler med HTTP Basic Auth.
 
-rm -rf .git
-git init
-git add .
-git commit -m "Initial commit from process-template"
+## Installation
 
-git remote add origin <new-repo-url>
-git push -u origin main
+```bash
+uv add git+https://github.com/odense-rpa/geoenviron
 ```
 
+## Forudsætninger
+
+- Python ≥ 3.13
+- Adgang til en GeoEnviron-installation (URL, brugernavn og adgangskode)
+
+## Nuværende funktionalitet
+
+Klienten autentificerer med brugernavn og adgangskode (HTTP Basic Auth) og stiller følgende funktioner til rådighed:
+
+| Funktion | Beskrivelse |
+|---|---|
+| `hent_sager` | Hent sagsakter med OData-filtrering (`$filter`, `$top` m.fl.) |
+| `hent_dokumenter` | Hent dokumenter for en given sag, sorteret efter dato |
+| `hent_bilag` | Hent bilag til et enkelt dokument |
+
+```python
+from geoenviron import GeoEnvironClient
+
+client = GeoEnvironClient(
+    base_url="https://geoenviron.kommune.dk",
+    username="brugernavn",
+    password="adgangskode",
+)
+
+sager = await client.hent_sager(filter="Status eq 'Åben'", top=100)
+dokumenter = await client.hent_dokumenter(sags_id="12345", inkluder_bilag=True)
+bilag = await client.hent_bilag(dokument_id="67890")
+```
+
+## Test
+
+Integrationstests køres mod en live GeoEnviron-instans. Sæt følgende miljøvariabler før kørsel:
+
+```bash
+export API_URL="https://geoenviron.kommune.dk"
+export USERNAME="brugernavn"
+export PASSWORD="adgangskode"
+
+uv run pytest
+```
+
+## Afhængigheder
+
+| Pakke | Formål |
+|---|---|
+| `httpx` | HTTP-klient til asynkrone kald mod GeoEnviron REST API |
+| `automation-server-client` | Klientbibliotek til Odense RPA Automation Server |
+| `pytest` | Testframework til integrationstests |
+| `ruff` | Linter og formatter |
+
+## Licens
+
+MIT
